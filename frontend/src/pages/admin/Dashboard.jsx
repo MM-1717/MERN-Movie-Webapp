@@ -29,7 +29,7 @@ const Dashboard = () => {
         return;
       }
 
-      // ✅ Use ADMIN API
+      // Use ADMIN API
       const res = await API.get("/movies/admin", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -55,9 +55,7 @@ const Dashboard = () => {
     }
   };
 
-  // ===============================
   // Stats
-  // ===============================
   const totalMovies = movies.length;
 
   const avgRating =

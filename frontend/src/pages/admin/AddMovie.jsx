@@ -19,9 +19,7 @@ export default function AddMovie() {
     duration: ""
   });
 
-  /* ===============================
-     Handle Change
-  =============================== */
+  /* Handle Change */
   const handleChange = (e) => {
 
     const { name, value } = e.target;
@@ -32,18 +30,14 @@ export default function AddMovie() {
     }));
   };
 
-  /* ===============================
-     Submit
-  =============================== */
+  /* Submit */
   const submit = async (e) => {
 
     e.preventDefault();
 
     if (loading) return;
 
-    /* ===============================
-       Validation
-    =============================== */
+    /* Validation */
 
     if (
       !form.name.trim() ||
@@ -78,9 +72,7 @@ export default function AddMovie() {
         return;
       }
 
-      /* ===============================
-         Send Data (No Poster)
-      =============================== */
+      /* Send Data (No Poster) */
 
       await axios.post(
         `${API}/movies`,
@@ -100,9 +92,7 @@ export default function AddMovie() {
 
       toast.success("Movie added successfully");
 
-      /* ===============================
-         Reset
-      =============================== */
+      /* Reset */
 
       setForm({
         name: "",
@@ -112,9 +102,7 @@ export default function AddMovie() {
         duration: "",
       });
 
-      /* ===============================
-         Redirect
-      =============================== */
+      /* Redirect */
 
       setTimeout(() => {
         navigate("/admin/movies");
@@ -140,9 +128,7 @@ export default function AddMovie() {
     }
   };
 
-  /* ===============================
-     UI
-  =============================== */
+  /* UI */
   return (
     <div className="admin-container">
 

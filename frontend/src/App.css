@@ -157,8 +157,7 @@ h6 {
   border-radius: 8px;
   gap: 20px;
 
-  transition:
-    background 0.2s ease,
+  transition: background 0.2s ease,
     transform 0.2s ease;
 }
 
@@ -312,7 +311,7 @@ h6 {
   border-radius: 5px;
 }
 
-/* ADMIN LAYOUT */
+/* Admin Layout */
 
 .admin-wrapper {
   display: flex;
@@ -343,7 +342,7 @@ h6 {
 
   height: 100vh;
 
-  position: fixed; /* Lock sidebar */
+  position: fixed; 
   left: 0;
   top: 0;
   bottom: 0;
@@ -410,13 +409,13 @@ h6 {
 .admin-main {
   flex: 1;
 
-  margin-left: 240px; /* Space for sidebar */
+  margin-left: 240px; 
 
   padding: 25px;
   color: white;
 
   height: 100vh;
 
-  overflow-y: auto; /* Scroll only here */
+  overflow-y: auto; 
   overflow-x: hidden;
 }

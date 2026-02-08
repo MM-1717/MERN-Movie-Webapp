@@ -4,9 +4,9 @@ import { useAuth } from "../context/AuthContext";
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (loading) return <p>Loading...</p>;
+
+  console.log("USER DATA:", user); // 👈 ADD THIS
 
   if (!user) {
     return <Navigate to="/login" replace />;

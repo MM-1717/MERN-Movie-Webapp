@@ -3,10 +3,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function AddMovie() {
-
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
@@ -16,12 +15,11 @@ export default function AddMovie() {
     description: "",
     rating: "",
     releaseDate: "",
-    duration: ""
+    duration: "",
   });
 
   /* Handle Change */
   const handleChange = (e) => {
-
     const { name, value } = e.target;
 
     setForm((prev) => ({
@@ -32,7 +30,6 @@ export default function AddMovie() {
 
   /* Submit */
   const submit = async (e) => {
-
     e.preventDefault();
 
     if (loading) return;
@@ -63,7 +60,6 @@ export default function AddMovie() {
     setLoading(true);
 
     try {
-
       const token = localStorage.getItem("token");
 
       if (!token) {
@@ -87,7 +83,7 @@ export default function AddMovie() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       toast.success("Movie added successfully");
@@ -107,22 +103,17 @@ export default function AddMovie() {
       setTimeout(() => {
         navigate("/admin/movies");
       }, 1000);
-
     } catch (err) {
-
       console.error("ADD ERROR:", err.response || err);
 
       if (err.response?.status === 401) {
         toast.error("Session expired. Login again.");
         navigate("/login");
-      }
-      else if (err.response?.data?.message) {
+      } else if (err.response?.data?.message) {
         toast.error(err.response.data.message);
-      }
-      else {
+      } else {
         toast.error("Failed to add movie");
       }
-
     } finally {
       setLoading(false);
     }
@@ -131,7 +122,6 @@ export default function AddMovie() {
   /* UI */
   return (
     <div className="admin-container">
-
       {/* Toast */}
       <Toaster position="top-center" />
 
@@ -179,11 +169,7 @@ export default function AddMovie() {
 
       <h1>Add Movie</h1>
 
-      <form
-        onSubmit={submit}
-        className="add-form"
-      >
-
+      <form onSubmit={submit} className="add-form">
         {/* Name */}
         <input
           name="name"
@@ -236,15 +222,10 @@ export default function AddMovie() {
         />
 
         {/* Submit */}
-        <button
-          className="add-btn"
-          disabled={loading}
-        >
+        <button className="add-btn" disabled={loading}>
           {loading ? "Saving..." : "Add Movie"}
         </button>
-
       </form>
-
     </div>
   );
 }

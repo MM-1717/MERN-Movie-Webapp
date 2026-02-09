@@ -3,11 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-
-const API = "http://localhost:5000/api";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function EditMovie() {
-
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -19,32 +17,23 @@ export default function EditMovie() {
     rating: "",
     releaseDate: "",
     duration: "",
-    poster: ""
+    poster: "",
   });
-
 
   /* LOAD MOVIE */
   useEffect(() => {
-
     const loadMovie = async () => {
-
       try {
-
-        const res = await axios.get(
-          `${API}/movies/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`
-            }
-          }
-        );
+        const res = await axios.get(`${API}/movies/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
         setForm(res.data);
 
         setLoading(false);
-
       } catch (err) {
-
         console.error("Load error:", err.response || err);
 
         alert("Failed to load movie");
@@ -54,61 +43,44 @@ export default function EditMovie() {
     };
 
     loadMovie();
-
   }, [id, navigate]);
-
 
   /* HANDLE CHANGE */
   const handleChange = (e) => {
-
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-
   };
-
 
   /* UPDATE MOVIE */
   const submit = async (e) => {
-
     e.preventDefault();
 
     try {
-
-      await axios.put(
-        `${API}/movies/${id}`,
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
-        }
-      );
+      await axios.put(`${API}/movies/${id}`, form, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       toast.success("Movie updated successfully");
 
       navigate("/admin/movies");
-
     } catch (err) {
-
       console.error("Update error:", err.response || err);
 
       toast.error("Failed to update movie");
-
     }
   };
-
 
   /* LOADING */
   if (loading) {
     return <h2>Loading...</h2>;
   }
 
-
   return (
     <div className="admin-container">
-
       <style>{`
         .edit-form {
           background: #1f1f1f;
@@ -145,14 +117,9 @@ export default function EditMovie() {
         }
       `}</style>
 
-
       <h1>Edit Movie</h1>
 
-      <form
-        onSubmit={submit}
-        className="edit-form"
-      >
-
+      <form onSubmit={submit} className="edit-form">
         <input
           name="name"
           value={form.name}
@@ -182,11 +149,7 @@ export default function EditMovie() {
         <input
           type="date"
           name="releaseDate"
-          value={
-            form.releaseDate
-              ? form.releaseDate.slice(0, 10)
-              : ""
-          }
+          value={form.releaseDate ? form.releaseDate.slice(0, 10) : ""}
           onChange={handleChange}
           required
         />
@@ -207,12 +170,8 @@ export default function EditMovie() {
           placeholder="Poster URL"
         />
 
-        <button className="save-btn">
-          Update Movie
-        </button>
-
+        <button className="save-btn">Update Movie</button>
       </form>
-
     </div>
   );
 }

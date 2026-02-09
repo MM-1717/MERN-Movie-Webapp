@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
-import { Box, Typography, Grid, Paper, Button, Divider } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  Button,
+  Divider,
+} from "@mui/material";
+
+import {
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import API from "../../services/api";
 
 const Dashboard = () => {
+
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    fetchMovies();
-  }, []);
-
-  // Fetch Movies
-
+  /* Fetch Movies */
   const fetchMovies = async () => {
     try {
       setLoading(true);
@@ -25,51 +33,68 @@ const Dashboard = () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        setError("Not logged in");
+        navigate("/login");
         return;
       }
 
-      // Use ADMIN API
+      // Admin API
       const res = await API.get("/movies/admin", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log("Dashboard Admin Movies:", res.data);
-
       if (Array.isArray(res.data.movies)) {
         setMovies(res.data.movies);
       } else {
-        console.error("Invalid format:", res.data);
-        setMovies([]);
-        setError("Invalid server response");
+        throw new Error("Invalid server response");
       }
+
     } catch (err) {
-      console.error("Dashboard fetch failed:", err);
+      console.error("Dashboard fetch error:", err);
+
+      if (
+        err.response?.status === 401 ||
+        err.response?.status === 403
+      ) {
+        localStorage.clear();
+        navigate("/login");
+
+      } else {
+        setError("Server error. Try again later.");
+      }
 
       setMovies([]);
-      setError("Session expired");
+
     } finally {
       setLoading(false);
     }
   };
 
-  // Stats
+  /* Re-fetch on route change */
+  useEffect(() => {
+    fetchMovies();
+  }, [location.pathname]);
+
+  /* Stats */
   const totalMovies = movies.length;
 
   const avgRating =
     movies.length > 0
       ? (
-          movies.reduce((sum, m) => sum + (Number(m.rating) || 0), 0) /
-          movies.length
+          movies.reduce(
+            (sum, m) => sum + (Number(m.rating) || 0),
+            0
+          ) / movies.length
         ).toFixed(1)
       : "0.0";
 
   const latestMovie =
-    movies.length > 0 ? movies[movies.length - 1]?.name : "N/A";
+    movies.length > 0
+      ? movies[movies.length - 1]?.name
+      : "N/A";
 
-  // UI
+  /* UI */
   return (
     <Box
       sx={{
@@ -110,10 +135,13 @@ const Dashboard = () => {
       {/* Stats */}
       {!loading && !error && (
         <Grid container spacing={3} mb={4}>
+
           {/* Total */}
           <Grid item xs={12} md={4}>
             <Paper sx={cardStyle}>
-              <Typography color="#AAAAAA">Total Movies</Typography>
+              <Typography color="#AAAAAA">
+                Total Movies
+              </Typography>
 
               <Typography variant="h3" color="#FFB000">
                 {totalMovies}
@@ -124,7 +152,9 @@ const Dashboard = () => {
           {/* Rating */}
           <Grid item xs={12} md={4}>
             <Paper sx={cardStyle}>
-              <Typography color="#AAAAAA">Average Rating</Typography>
+              <Typography color="#AAAAAA">
+                Average Rating
+              </Typography>
 
               <Typography variant="h3" color="#FFB000">
                 ⭐ {avgRating}
@@ -135,16 +165,22 @@ const Dashboard = () => {
           {/* Latest */}
           <Grid item xs={12} md={4}>
             <Paper sx={cardStyle}>
-              <Typography color="#AAAAAA">Latest Movie</Typography>
+              <Typography color="#AAAAAA">
+                Latest Movie
+              </Typography>
 
-              <Typography mt={1}>{latestMovie}</Typography>
+              <Typography mt={1}>
+                {latestMovie}
+              </Typography>
             </Paper>
           </Grid>
+
         </Grid>
       )}
 
       {/* Quick Actions */}
       <Paper sx={panelStyle}>
+
         <Typography variant="h6" mb={2}>
           Quick Actions
         </Typography>
@@ -166,10 +202,12 @@ const Dashboard = () => {
         >
           📂 Manage Movies
         </Button>
+
       </Paper>
 
-      {/* Recent */}
+      {/* Recent Movies */}
       <Paper sx={panelStyle}>
+
         <Typography variant="h6" mb={2}>
           Recently Added Movies
         </Typography>
@@ -183,21 +221,30 @@ const Dashboard = () => {
             .reverse()
             .map((movie) => (
               <Box key={movie._id} sx={rowStyle}>
-                <Typography>{movie.name}</Typography>
 
-                <Typography color="#FFB000">⭐ {movie.rating}</Typography>
+                <Typography>
+                  {movie.name}
+                </Typography>
+
+                <Typography color="#FFB000">
+                  ⭐ {movie.rating}
+                </Typography>
+
               </Box>
             ))}
 
-        {!loading && movies.length === 0 && !error && (
-          <Typography color="#AAAAAA">No movies yet.</Typography>
+        {!loading && !error && movies.length === 0 && (
+          <Typography color="#AAAAAA">
+            No movies yet.
+          </Typography>
         )}
+
       </Paper>
     </Box>
   );
 };
 
-// Styles
+/* Styles */
 
 const cardStyle = {
   p: 3,

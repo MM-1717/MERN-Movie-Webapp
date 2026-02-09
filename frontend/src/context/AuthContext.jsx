@@ -14,11 +14,15 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+  const savedUser = localStorage.getItem("user");
+  if (savedUser) {
+    setUser(JSON.parse(savedUser));
+  }
 
+  if (!token) {
+    setLoading(false);
+    return;
+  }
     const loadUser = async () => {
       try {
         const res = await axios.get(`${API}/auth/me`, {
@@ -43,9 +47,10 @@ export const AuthProvider = ({ children }) => {
 
   /* Login */
   const login = (data) => {
-    localStorage.setItem("token", data.token);
-    setUser(data.user);
-  };
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  setUser(data.user);
+};
 
   /* Logout */
   const logout = () => {
